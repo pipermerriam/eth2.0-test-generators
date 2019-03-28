@@ -6,16 +6,30 @@ from ruamel.yaml import (
     YAML,
 )
 
-from uint_test_generators import (
-    generate_uint_bounds_test,
-    generate_uint_random_test,
-    generate_uint_wrong_length_test,
+from basic_types import (
+    generate_bool_test,
+    generate_uint_test,
+)
+from flat_composite_types import (
+    generate_flat_list_test,
+    generate_flat_container_test,
+    generate_flat_vector_test,
+)
+from nested_composite_types import (
+    generate_two_layer_composite_test,
+    generate_deeply_nested_composite_test,
 )
 
 test_generators = [
-    generate_uint_random_test,
-    generate_uint_wrong_length_test,
-    generate_uint_bounds_test,
+    generate_bool_test,
+    generate_uint_test,
+
+    generate_flat_list_test,
+    generate_flat_container_test,
+    generate_flat_vector_test,
+
+    generate_two_layer_composite_test,
+    generate_deeply_nested_composite_test,
 ]
 
 
