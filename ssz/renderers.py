@@ -11,11 +11,10 @@ from eth_utils import (
 from ssz.sedes import (
     BaseSedes,
     Boolean,
-    Bytes,
-    BytesN,
     Container,
     List,
     UInt,
+    Vector,
 )
 
 
@@ -45,13 +44,10 @@ def render_type_definition(sedes):
         return "bool"
 
     elif isinstance(sedes, UInt):
-        return f"uint{sedes.length * 8}"
+        return f"uint{sedes.size * 8}"
 
-    elif isinstance(sedes, BytesN):
-        return f"bytes{sedes.length}"
-
-    elif isinstance(sedes, Bytes):
-        return f"bytes"
+    elif isinstance(sedes, Vector):
+        return [render_type_definition(sedes.element_sedes), sedes.number_of_elements]
 
     elif isinstance(sedes, List):
         return [render_type_definition(sedes.element_sedes)]
@@ -99,4 +95,4 @@ def render_test(*, title, summary, version, test_cases):
     if summary is not None:
         yield "summary", summary
     yield "version", version
-    yield "test_cases", test_cases
+    yield "test_cases", tuple(test_cases)
