@@ -2,6 +2,7 @@ from collections.abc import (
     Mapping,
     Sequence,
 )
+import copy
 
 from eth_utils import (
     encode_hex,
@@ -77,6 +78,10 @@ def render_test_case(*, sedes, valid, value=None, serial=None, description=None,
 
     if tags is None:
         tags = []
+
+    # Ensure that ruemel doesn't use references, allowing callers of this
+    # function to re-use the same `tags` object across multiple calls.
+    tags = tuple(tag for tag in tags)
 
     yield "type", render_type_definition(sedes)
     yield "valid", valid
