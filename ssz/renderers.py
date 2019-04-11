@@ -2,7 +2,6 @@ from collections.abc import (
     Mapping,
     Sequence,
 )
-import copy
 
 from eth_utils import (
     encode_hex,
@@ -48,16 +47,16 @@ def render_type_definition(sedes):
         return f"uint{sedes.size * 8}"
 
     elif isinstance(sedes, Vector):
-        return [render_type_definition(sedes.element_sedes), sedes.number_of_elements]
+        return [render_type_definition(sedes.element_sedes), sedes.length]
 
     elif isinstance(sedes, List):
         return [render_type_definition(sedes.element_sedes)]
 
     elif isinstance(sedes, Container):
-        return {
-            field_name: render_type_definition(field_sedes)
-            for field_name, field_sedes in sedes.fields
-        }
+        return tuple(
+            render_type_definition(field)
+            for field in sedes.field_sedes
+        )
 
     elif isinstance(sedes, BaseSedes):
         raise Exception("Unreachable: All sedes types have been checked")
@@ -95,9 +94,9 @@ def render_test_case(*, sedes, valid, value=None, serial=None, description=None,
 
 
 @to_dict
-def render_test(*, title, summary, fork, test_cases):
+def render_test(*, title, summary, version, test_cases):
     yield "title", title,
     if summary is not None:
         yield "summary", summary
-    yield "fork", fork
+    yield "version", version
     yield "test_cases", tuple(test_cases)

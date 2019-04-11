@@ -1,5 +1,5 @@
-from itertools import chain
-from random import Random
+import itertools
+import random
 
 import ssz
 from ssz.sedes import (
@@ -11,13 +11,12 @@ from ssz.sedes import (
     Vector,
 )
 
+from _utils import seed
 from renderers import (
     render_test_case,
     render_test,
 )
 
-
-random = Random(0)
 
 UINT_SIZES = tuple(8 * 2**exponent for exponent in range(0, 6))  # 8, 16, ..., 256
 NUM_RANDOM_LENGTHS = 16
@@ -68,15 +67,12 @@ def generate_flat_homogenous_container_test_cases():
             for _ in range(NUM_RANDOM_LENGTHS)
         )
         for length in lengths:
-            field_names = tuple(f"field{field_index}" for field_index in range(length))
-            sedes = Container(tuple(
-                (field_name, element_sedes)
-                for field_name in field_names
-            ))
-            value = {
-                field_name: get_random_basic_value(element_sedes)
-                for field_name in field_names
-            }
+            fields = tuple(itertools.repeat(element_sedes, length))
+            sedes = Container(fields)
+            value = tuple(
+                get_random_basic_value(element_sedes)
+                for element_sedes in fields
+            )
             yield render_test_case(
                 sedes=sedes,
                 valid=True,
@@ -97,16 +93,12 @@ def generate_flat_heterogenous_container_test_cases():
         UInt(bit_size) for bit_size in UINT_SIZES
     )
     for length in lengths:
-        field_names = tuple(f"field{field_index}" for field_index in range(length))
-        field_sedes = tuple(random.choice(element_sedes_choices) for _ in range(length))
-        sedes = Container(tuple(
-            (field_name, field_sedes)
-            for field_name, field_sedes in zip(field_names, field_sedes)
-        ))
-        value = {
-            field_name: get_random_basic_value(sedes)
-            for field_name, sedes in zip(field_names, field_sedes)
-        }
+        fields = tuple(random.choice(element_sedes_choices) for _ in range(length))
+        sedes = Container(fields)
+        value = tuple(
+            get_random_basic_value(field)
+            for field in fields
+        )
 
         yield render_test_case(
             sedes=sedes,
@@ -127,7 +119,7 @@ def generate_flat_vector_test_cases():
             for _ in range(NUM_RANDOM_LENGTHS)
         )
         for length in lengths:
-            sedes = Vector(length, element_sedes)
+            sedes = Vector(element_sedes, length)
             value = tuple(get_random_basic_value(element_sedes) for _ in range(length))
             yield render_test_case(
                 sedes=sedes,
@@ -138,6 +130,7 @@ def generate_flat_vector_test_cases():
             )
 
 
+@seed
 def generate_flat_list_test():
     return render_test(
         title="Flat List",
@@ -147,18 +140,20 @@ def generate_flat_list_test():
     )
 
 
+@seed
 def generate_flat_container_test():
     return render_test(
         title="Flat Container",
         summary="Tests for containers consisting of only basic types",
         version="0.1",
-        test_cases=chain(
+        test_cases=itertools.chain(
             generate_flat_homogenous_container_test_cases(),
             generate_flat_heterogenous_container_test_cases(),
         )
     )
 
 
+@seed
 def generate_flat_vector_test():
     return render_test(
         title="Flat Vector",

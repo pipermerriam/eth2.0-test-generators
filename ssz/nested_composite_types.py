@@ -16,6 +16,7 @@ from ssz.sedes import (
     Vector,
 )
 
+from _utils import seed
 from renderers import (
     render_test_case,
     render_test,
@@ -56,7 +57,7 @@ def get_random_value(sedes, max_list_length):
     elif isinstance(sedes, Vector):
         return tuple(
             get_random_value(sedes.element_sedes, max_list_length)
-            for _ in range(sedes.number_of_elements)
+            for _ in range(sedes.length)
         )
     elif isinstance(sedes, List):
         length = random.randint(0, max_list_length)
@@ -65,10 +66,10 @@ def get_random_value(sedes, max_list_length):
             for _ in range(length)
         )
     elif isinstance(sedes, Container):
-        return {
-            field_name: get_random_value(field_sedes, max_list_length)
-            for field_name, field_sedes in sedes.fields
-        }
+        return tuple(
+            get_random_value(field, max_list_length)
+            for field in sedes.field_sedes
+        )
     else:
         raise ValueError(f"Cannot generate random value for sedes {sedes}")
 
@@ -81,13 +82,13 @@ def get_random_list_sedes(element_sedes_factory):
 def get_random_vector_sedes(element_sedes_factory, max_length):
     length = random.randint(0, max_length)
     element_sedes = element_sedes_factory()
-    return Vector(length, element_sedes)
+    return Vector(element_sedes, length)
 
 
 def get_random_container_sedes(element_sedes_factory, max_length):
     length = random.randint(0, max_length)
     fields = tuple(
-        (f"field{index}", element_sedes_factory())
+        element_sedes_factory()
         for index in range(length)
     )
     return Container(fields)
@@ -149,6 +150,7 @@ def generate_deeply_nested_composite_test_cases():
         )
 
 
+@seed
 def generate_two_layer_composite_test():
     return render_test(
         title="Nested composite types",
@@ -158,6 +160,7 @@ def generate_two_layer_composite_test():
     )
 
 
+@seed
 def generate_deeply_nested_composite_test():
     return render_test(
         title="Deeply nested composite types",
