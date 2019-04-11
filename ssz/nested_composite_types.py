@@ -112,6 +112,8 @@ def get_random_deep_nested_sedes():
 
 
 def generate_two_layer_composite_test_cases():
+    tags = ("composite", "nested", "shallow")
+
     composite_sedes_factories = tuple((
         get_random_list_sedes,
         partial(get_random_vector_sedes, max_length=MAX_RANDOM_VECTOR_LENGTH),
@@ -133,11 +135,13 @@ def generate_two_layer_composite_test_cases():
                 valid=True,
                 value=value,
                 serial=ssz.encode(value, outer_sedes),
-                tags=["composite", "nested", "shallow"],
+                tags=tags,
             )
 
 
 def generate_deeply_nested_composite_test_cases():
+    tags = ("composite", "nested", "deep")
+
     for _ in range(NUM_DEEP_NESTING_TEST_CASES):
         sedes = get_random_deep_nested_sedes()
         value = get_random_value(sedes, DEEP_NESTING_MAX_WIDTH)
@@ -146,7 +150,7 @@ def generate_deeply_nested_composite_test_cases():
             valid=True,
             value=value,
             serial=ssz.encode(value, sedes),
-            tags=["composite", "nested", "deep"],
+            tags=tags,
         )
 
 

@@ -35,6 +35,7 @@ def get_random_basic_value(sedes):
 
 
 def generate_flat_list_test_cases():
+    tags = ("composite", "list", "flat")
     for element_sedes in (boolean,) + tuple(UInt(bit_size) for bit_size in UINT_SIZES):
         sedes = List(element_sedes)
         lengths = (
@@ -53,11 +54,13 @@ def generate_flat_list_test_cases():
                 valid=True,
                 value=value,
                 serial=ssz.encode(value, sedes),
-                tags=["composite", "list", "flat"],
+                tags=tags,
             )
 
 
 def generate_flat_homogenous_container_test_cases():
+    tags = ("composite", "container", "flat", "homogenous")
+
     for element_sedes in (boolean,) + tuple(UInt(bit_size) for bit_size in UINT_SIZES):
         lengths = (
             0,
@@ -78,11 +81,13 @@ def generate_flat_homogenous_container_test_cases():
                 valid=True,
                 value=value,
                 serial=ssz.encode(value, sedes),
-                tags=["composite", "container", "flat", "homogenous"],
+                tags=tags,
             )
 
 
 def generate_flat_heterogenous_container_test_cases():
+    tags = ("composite", "container", "flat", "heterogenous")
+
     lengths = tuple(
         random.randint(0, MAX_RANDOM_CONTAINER_LENGTH)
         for _ in range(NUM_RANDOM_LENGTHS)
@@ -105,11 +110,13 @@ def generate_flat_heterogenous_container_test_cases():
             valid=True,
             value=value,
             serial=ssz.encode(value, sedes),
-            tags=["composite", "container", "flat", "heterogenous"],
+            tags=tags,
         )
 
 
 def generate_flat_vector_test_cases():
+    tags = ("composite", "vector", "flat", "homogenous")
+
     for element_sedes in (boolean,) + tuple(UInt(bit_size) for bit_size in UINT_SIZES):
         lengths = (
             0,
@@ -126,7 +133,7 @@ def generate_flat_vector_test_cases():
                 valid=True,
                 value=value,
                 serial=ssz.encode(value, sedes),
-                tags=["composite", "vector", "flat", "homogenous"],
+                tags=tags,
             )
 
 

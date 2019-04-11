@@ -18,6 +18,8 @@ NUM_RANDOM_UINT_VALUES = 16
 
 
 def generate_uint_test_cases():
+    tags = ("basic", "uint")
+
     for bit_size in UINT_SIZES:
         sedes = UInt(bit_size)
         max_int = 2**bit_size - 1
@@ -38,7 +40,7 @@ def generate_uint_test_cases():
                 valid=True,
                 value=value,
                 serial=serial,
-                tags=["basic", "uint"],
+                tags=tags,
             )
 
 
@@ -53,13 +55,14 @@ def generate_uint_test():
 
 
 def generate_bool_true_and_false_test_cases():
+    tags = ("basic", "bool")
     for value in (True, False):
         yield render_test_case(
             sedes=boolean,
             valid=True,
             value=value,
             serial=ssz.encode(value, boolean),
-            tags=["basic", "bool"],
+            tags=tags,
         )
 
 
